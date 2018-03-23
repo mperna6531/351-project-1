@@ -27,8 +27,7 @@ const char recvFileName[] = "recvfile";
  * @param sharedMemPtr - the pointer to the shared memory
  */
 
-void init(int& shmid, int& msqid, void*& sharedMemPtr)
-{
+void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	
 	/* TODO: 1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).
@@ -54,8 +53,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 /**
  * The main loop
  */
-void mainLoop()
-{
+void mainLoop() {
 	/* The size of the mesage */
 	int msgSize = 0;
 	
@@ -63,8 +61,7 @@ void mainLoop()
 	FILE* fp = fopen(recvFileName, "w");
 		
 	/* Error checks */
-	if(!fp)
-	{
+	if(!fp) {
 		perror("fopen");	
 		exit(-1);
 	}
@@ -84,14 +81,11 @@ void mainLoop()
  	 * there is no more data to send
  	 */	
 
-	while(msgSize != 0)
-	{	
+	while(msgSize != 0) {	
 		/* If the sender is not telling us that we are done, then get to work */
-		if(msgSize != 0)
-		{
+		if(msgSize != 0) {
 			/* Save the shared memory to file */
-			if(fwrite(sharedMemPtr, sizeof(char), msgSize, fp) < 0)
-			{
+			if(fwrite(sharedMemPtr, sizeof(char), msgSize, fp) < 0) {
 				perror("fwrite");
 			}
 			
@@ -101,8 +95,7 @@ void mainLoop()
  			 */
 		}
 		/* We are done */
-		else
-		{
+		else {
 			/* Close the file */
 			fclose(fp);
 		}
@@ -118,8 +111,7 @@ void mainLoop()
  * @param msqid - the id of the message queue
  */
 
-void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
-{
+void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 	/* TODO: Detach from shared memory */
 	
 	/* TODO: Deallocate the shared memory chunk */
@@ -132,14 +124,12 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
  * @param signal - the signal type
  */
 
-void ctrlCSignal(int signal)
-{
+void ctrlCSignal(int signal) {
 	/* Free system V resources */
 	cleanUp(shmid, msqid, sharedMemPtr);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 	
 	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message

@@ -21,8 +21,7 @@ void* sharedMemPtr;
  * @param msqid - the id of the shared memory
  */
 
-void init(int& shmid, int& msqid, void*& sharedMemPtr)
-{
+void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	/* TODO: 
         1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).
@@ -51,8 +50,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
  * @param msqid - the id of the message queue
  */
 
-void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
-{
+void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 	/* TODO: Detach from shared memory */
 }
 
@@ -60,8 +58,7 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
  * The main send function
  * @param fileName - the name of the file
  */
-void send(const char* fileName)
-{
+void send(const char* fileName) {
 	/* Open the file for reading */
 	FILE* fp = fopen(fileName, "r");
 	
@@ -73,21 +70,18 @@ void send(const char* fileName)
 	message rcvMsg;
 	
 	/* Was the file open? */
-	if(!fp)
-	{
+	if(!fp) {
 		perror("fopen");
 		exit(-1);
 	}
 	
 	/* Read the whole file */
-	while(!feof(fp))
-	{
+	while(!feof(fp)) {
 		/* Read at most SHARED_MEMORY_CHUNK_SIZE from the file and store them in shared memory. 
  		 * fread will return how many bytes it has actually read (since the last chunk may be less
  		 * than SHARED_MEMORY_CHUNK_SIZE).
  		 */
-		if((sndMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp)) < 0)
-		{
+		if((sndMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp)) < 0) {
 			perror("fread");
 			exit(-1);
 		}
@@ -115,12 +109,10 @@ void send(const char* fileName)
 }
 
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 	
 	/* Check the command line arguments */
-	if(argc < 2)
-	{
+	if(argc < 2) {
 		fprintf(stderr, "USAGE: %s <FILE NAME>\n", argv[0]);
 		exit(-1);
 	}
