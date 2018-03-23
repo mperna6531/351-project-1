@@ -1,3 +1,6 @@
+#ifndef _MESSAGE_H
+#define _MESSAGE_H
+
 /* The information type */ 
 
 #define SENDER_DATA_TYPE 1
@@ -10,8 +13,7 @@
  */
 
 
-struct message
-{
+struct message {
 	/* The message type */
 	long mtype;
 	
@@ -23,8 +25,9 @@ struct message
  	 * @param fp - the file stream to print to
  	 */
 
-	void print(FILE* fp)
-	{
-		fprintf(fp, "%d %d", mtype, size);
+	void print(FILE* fp) {
+		fprintf(fp, "%ld %d", mtype, size);
 	}
 };
+
+#endif

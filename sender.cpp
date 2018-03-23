@@ -67,7 +67,7 @@ void send(const char* fileName) {
 	message sndMsg; 
 	
 	/* A buffer to store message received from the receiver. */
-	message rcvMsg;
+	// message rcvMsg;
 	
 	/* Was the file open? */
 	if(!fp) {
