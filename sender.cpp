@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fstream>
 #include "msg.h"    /* For the message struct */
 
 /* The size of the shared memory chunk */
@@ -37,16 +36,18 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	// Create a file called keyfile.txt containing string "Hello world"
   
 	
-	// Use ftok("keyfile.txt", 'a') in order to generate the key
+	// use ftok("keyfile.txt", 'a') in order to generate the key
 	key_t key = ftok(KEY_FILE, 'a');
-
   
 	
-	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
-	/* TODO: Attach to the shared memory */
-	/* TODO: Attach to the message queue */
-	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
-	
+	// get the id of the shared memory segment
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666);
+
+	// attach to the shared memory
+	sharedMemPtr = shmat(shmid, (void*)0, 0);
+
+	// attach to the message queue
+	msqid = msgget(key, 0666 | IPC_CREAT);	
 }
 
 /**
@@ -57,7 +58,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
  */
 
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
-	/* TODO: Detach from shared memory */
+	// detach from shared memory
 }
 
 /**
@@ -91,12 +92,10 @@ void send(const char* fileName) {
 			perror("fread");
 			exit(-1);
 		}
-		
 			
-		/* TODO: Send a message to the receiver telling him that the data is ready 
- 		 * (message of type SENDER_DATA_TYPE) 
- 		 */
-		
+		// send a message to the receiver telling him that the data is ready 
+		msgsnd(msqid, sharedMemPtr,sndMsg.size, SENDER_DATA_TYPE);
+
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */

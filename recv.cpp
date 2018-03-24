@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "msg.h"    /* For the message struct */
-#include<fstream>
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
@@ -20,7 +19,7 @@ int shmid, msqid;
 void *sharedMemPtr;
 
 /* The name of the received file */
-const char recvFileName[] = "recvfile";
+const char *recvFileName = "recvfile";
 
 
 /**
@@ -32,9 +31,7 @@ const char recvFileName[] = "recvfile";
 
 void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	
-	/* TODO: 1. Create a file called keyfile.txt containing string "Hello world" (you may do
- 		    so manually or from the code).
-	         2. Use ftok("keyfile.txt", 'a') in order to generate the key.
+	/*
 		 3. Use the key in the TODO's below. Use the same key for the queue
 		    and the shared memory segment. This also serves to illustrate the difference
 		    between the key and the id used in message queues and shared memory. The id
@@ -43,21 +40,21 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 		    may have the same key.
 	 */
   	// Create a file called keyfile.txt containing string "Hello world"
-  std::ofstream ofs(KEY_FILE);
-	ofs << "Hello world";
+  FILE *kf = fopen(KEY_FILE, "w");
+	fputs("Hello world", kf);
+	fclose(kf);
   
 	// use ftok("keyfile.txt", 'a') in order to generate the key
 	key_t key = ftok(KEY_FILE, 'a');
 
 	// allocate a piece of shared memory
-	shmid = (key, SHARED_MEMORY_CHUNK_SIZE, 0666);
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666);
   
 	// attach to the shared memory
   sharedMemPtr = shmat(shmid, (void*)0, 0);
   
 	// create a message queue
   msqid = msgget(key, 0666 | IPC_CREAT);
-	
 }
  
 
@@ -87,7 +84,8 @@ void mainLoop() {
      * NOTE: the received file will always be saved into the file called
      * "recvfile"
      */
-
+	
+  msgSize = msgrcv(msqid, sharedMemPtr, SHARED_MEMORY_CHUNK_SIZE, SENDER_DATA_TYPE, 0);
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
  	 */	
