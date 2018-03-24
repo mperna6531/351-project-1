@@ -5,10 +5,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "msg.h"    /* For the message struct */
-
+#include<fstream>
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
+
+/* The name of the keyfile */
+#define KEY_FILE "keyfile.txt"
 
 /* The ids for the shared memory segment and the message queue */
 int shmid, msqid;
@@ -39,13 +42,21 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-	
+  	// Create a file called keyfile.txt containing string "Hello world"
+  std::ofstream ofs(KEY_FILE);
+	ofs << "Hello world";
+  
+	// use ftok("keyfile.txt", 'a') in order to generate the key
+	key_t key = ftok(KEY_FILE, 'a');
 
-	
-	/* TODO: Allocate a piece of shared memory. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE. */
-	/* TODO: Attach to the shared memory */
-	/* TODO: Create a message queue */
-	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
+	// allocate a piece of shared memory
+	shmid = (key, SHARED_MEMORY_CHUNK_SIZE, 0666);
+  
+	// attach to the shared memory
+  sharedMemPtr = shmat(shmid, (void*)0, 0);
+  
+	// create a message queue
+  msqid = msgget(key, 0666 | IPC_CREAT);
 	
 }
  

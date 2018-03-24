@@ -4,10 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fstream>
 #include "msg.h"    /* For the message struct */
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
+#define KEY_FILE "keyfile.txt"
 
 /* The ids for the shared memory segment and the message queue */
 int shmid, msqid;
@@ -23,9 +25,7 @@ void* sharedMemPtr;
 
 void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 	/* TODO: 
-        1. Create a file called keyfile.txt containing string "Hello world" (you may do
- 		    so manually or from the code).
-	    2. Use ftok("keyfile.txt", 'a') in order to generate the key.
+
 		3. Use the key in the TODO's below. Use the same key for the queue
 		    and the shared memory segment. This also serves to illustrate the difference
 		    between the key and the id used in message queues and shared memory. The id
@@ -33,8 +33,14 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 		    is unique system-wide among all SYstem V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-	
 
+	// Create a file called keyfile.txt containing string "Hello world"
+  
+	
+	// Use ftok("keyfile.txt", 'a') in order to generate the key
+	key_t key = ftok(KEY_FILE, 'a');
+
+  
 	
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
 	/* TODO: Attach to the shared memory */
@@ -67,7 +73,7 @@ void send(const char* fileName) {
 	message sndMsg; 
 	
 	/* A buffer to store message received from the receiver. */
-	// message rcvMsg;
+	message rcvMsg;
 	
 	/* Was the file open? */
 	if(!fp) {
