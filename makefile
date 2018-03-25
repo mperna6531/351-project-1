@@ -7,4 +7,4 @@ receiver: recv.cpp msg.h
 	g++ -Wall -o recv recv.cpp
 
 clean:
-	rm sender recv
+	rm sender recv keyfile.txt recvfile

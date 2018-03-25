@@ -24,7 +24,7 @@ struct message {
  	 * Prints the structure
  	 * @param fp - the file stream to print to
  	 */
-
+		
 	void print(FILE* fp) {
 		fprintf(fp, "%ld %d", mtype, size);
 	}

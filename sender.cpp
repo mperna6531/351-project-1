@@ -32,16 +32,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 		    is unique system-wide among all SYstem V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-
-	// Create a file called keyfile.txt containing string "Hello world"
   
-	
 	// use ftok("keyfile.txt", 'a') in order to generate the key
 	key_t key = ftok(KEY_FILE, 'a');
   
 	
 	// get the id of the shared memory segment
-	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666);
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, IPC_CREAT | 0666);
 
 	// attach to the shared memory
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
@@ -59,6 +56,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
 
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 	// detach from shared memory
+  shmdt(sharedMemPtr);
 }
 
 /**
@@ -71,8 +69,8 @@ void send(const char* fileName) {
 	
 
 	/* A buffer to store message we will send to the receiver. */
-	message sndMsg; 
-	
+	message sndMsg;
+	sndMsg.mtype = SENDER_DATA_TYPE;
 	/* A buffer to store message received from the receiver. */
 	message rcvMsg;
 	
@@ -92,21 +90,20 @@ void send(const char* fileName) {
 			perror("fread");
 			exit(-1);
 		}
-			
-		// send a message to the receiver telling him that the data is ready 
-		msgsnd(msqid, sharedMemPtr,sndMsg.size, SENDER_DATA_TYPE);
 
+		// send a message to the receiver telling him that the data is ready 
+		msgsnd(msqid, &sndMsg, sizeof(sndMsg.size), 0);
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
+
+		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg.size), RECV_DONE_TYPE, 0);
 	}
 	
 
-	/** TODO: once we are out of the above loop, we have finished sending the file.
- 	  * Lets tell the receiver that we have nothing more to send. We will do this by
- 	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
-	  */
-
+	// tell the receiver that we have nothing more to send. We will do this by sending a message of type SENDER_DATA_TYPE with size field set to 0. 
+	sndMsg.size = 0;	
+  msgsnd(msqid, &sndMsg, sizeof(sndMsg.size), 0);
 		
 	/* Close the file */
 	fclose(fp);
