@@ -30,16 +30,7 @@ const char *recvFileName = "recvfile";
  */
 
 void init(int& shmid, int& msqid, void*& sharedMemPtr) {
-	
-	/*
-		 3. Use the key in the TODO's below. Use the same key for the queue
-		    and the shared memory segment. This also serves to illustrate the difference
-		    between the key and the id used in message queues and shared memory. The id
-		    for any System V object (i.e. message queues, shared memory, and sempahores) 
-		    is unique system-wide among all System V objects. Two objects, on the other hand,
-		    may have the same key.
-	 */
-  	// Create a file called keyfile.txt containing string "Hello world"
+  // Create a file called keyfile.txt containing string "Hello world"
   FILE *kf = fopen(KEY_FILE, "w");
 	fputs("Hello world", kf);
 	fclose(kf);
@@ -57,7 +48,6 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr) {
   msqid = msgget(key, 0666 | IPC_CREAT);
 }
  
-
 /**
  * The main loop
  */
@@ -73,28 +63,17 @@ void mainLoop() {
 		perror("fopen");	
 		exit(-1);
 	}
-		
-    /* TODO: Receive the message and get the message size. The message will 
-     * contain regular information. The message will be of SENDER_DATA_TYPE
-     * (the macro SENDER_DATA_TYPE is defined in msg.h).  If the size field
-     * of the message is not 0, then we copy that many bytes from the shared
-     * memory region to the file. Otherwise, if 0, then we close the file and
-     * exit.
-     *
-     * NOTE: the received file will always be saved into the file called
-     * "recvfile"
-     */
+  // NOTE: the received file will always be saved into the file called  "recvfile"
 
 	message sndMsg, rcvMsg;
 	sndMsg.mtype = RECV_DONE_TYPE;
    
   msgrcv(msqid, &rcvMsg, sizeof(rcvMsg.size), SENDER_DATA_TYPE, 0);
 	msgSize = rcvMsg.size;
+
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
  	 */	
-  
-
 	while(msgSize != 0) {	
 		/* If the sender is not telling us that we are done, then get to work */
     
@@ -111,8 +90,6 @@ void mainLoop() {
 
 	fclose(fp);
 }
-
-
 
 /**
  * Perfoms the cleanup functions
@@ -140,26 +117,20 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 void ctrlCSignal(int signal) {
 	/* Free system V resources */
 	cleanUp(shmid, msqid, sharedMemPtr);
+	exit(1);
 }
 
 int main(int argc, char **argv) {
-	
-	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
- 	 * In a case user presses Ctrl-c your program should delete message
- 	 * queues and shared memory before exiting. You may add the cleaning functionality
- 	 * in ctrlCSignal().
- 	 */
-			
-
-	/* Initialize */
+	// handle ctrl-c input
 	signal(SIGINT, ctrlCSignal);
 
+  /* Initialize */
 	init(shmid, msqid, sharedMemPtr);
 	
 	/* Go to the main loop */
 	mainLoop();
 
-	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
+	// etach from shared memory segment, and deallocate shared memory and message queue
 	cleanUp(shmid, msqid, sharedMemPtr);
 
 	return 0;
