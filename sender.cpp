@@ -56,11 +56,11 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr) {
 void send(const char* fileName) {
 	/* Open the file for reading */
 	FILE* fp = fopen(fileName, "r");
-	
 
 	/* A buffer to store message we will send to the receiver. */
 	message sndMsg;
 	sndMsg.mtype = SENDER_DATA_TYPE;
+	
 	/* A buffer to store message received from the receiver. */
 	message rcvMsg;
 	
@@ -89,7 +89,6 @@ void send(const char* fileName) {
 
 		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg.size), RECV_DONE_TYPE, 0);
 	}
-	
 
 	// tell the receiver that we have nothing more to send. We will do this by sending a message of type SENDER_DATA_TYPE with size field set to 0. 
 	sndMsg.size = 0;	

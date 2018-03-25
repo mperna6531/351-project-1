@@ -66,8 +66,8 @@ void mainLoop() {
   // NOTE: the received file will always be saved into the file called  "recvfile"
 
 	message sndMsg, rcvMsg;
-	sndMsg.mtype = RECV_DONE_TYPE;
-   
+  sndMsg.mtype = RECV_DONE_TYPE;
+	 
   msgrcv(msqid, &rcvMsg, sizeof(rcvMsg.size), SENDER_DATA_TYPE, 0);
 	msgSize = rcvMsg.size;
 
