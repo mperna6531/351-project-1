@@ -14,7 +14,7 @@
 int shmid, msqid;
 
 /* The pointer to the shared memory */
-void* sharedMemPtr;
+void *sharedMemPtr;
 
 /**
  * Sets up the shared memory segment and message queue
