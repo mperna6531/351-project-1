@@ -1,8 +1,9 @@
 #ifndef _MESSAGE_H
 #define _MESSAGE_H
 
-/* The information type */ 
+#include <stdio.h>
 
+/* The information type */ 
 #define SENDER_DATA_TYPE 1
 
 /* The done message */
@@ -11,23 +12,20 @@
 /**
  * The message structure
  */
-
-
 struct message {
-	/* The message type */
-	long mtype;
-	
-	/* How many bytes in the message */
-	int size;
-	
-	/**
- 	 * Prints the structure
- 	 * @param fp - the file stream to print to
- 	 */
-		
-	void print(FILE* fp) {
-		fprintf(fp, "%ld %d", mtype, size);
-	}
+  /* The message type */
+  long mtype;
+  
+  /* How many bytes in the message */
+  int size;
+    
+  /**
+  * Prints the structure
+  * @param fp - the file stream to print to
+  */
+  void print(FILE* fp) {
+    fprintf(fp, "%ld %d", mtype, size);
+  }
 };
 
 #endif
